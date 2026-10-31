@@ -5,19 +5,27 @@ on:
     - cron: '0 4 * * *' # Corre automaticamente todos os dias às 4h da manhã
   workflow_dispatch: # Permite correr manualmente a qualquer momento
 
+permissions:
+  contents: write
+
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
       - name: Processar e Converter Lista M3U
         run: |
           # Descarrega a lista original M3UPT
           curl -s https://raw.githubusercontent.com/m3upt/m3upt.github.io/master/m3upt.m3u -o original.m3u
           
-          # Converte links para formato HLS e organiza
+          # Converte links para formato HLS
           sed 's/\.ts/\.m3u8/g' original.m3u > lista_hls.m3u
 
       - name: Guardar Lista Atualizada
